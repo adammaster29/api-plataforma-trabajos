@@ -3,8 +3,10 @@ const express = require('express');
 const cors = require('cors');
 const { poolpromise } = require('./src/conf/config');
 const rolrouter = require('./src/router/rolrouter');
-const  usuariorouter = require('./src/router/usuariorouter')
-const candidatorouter = require('./src/router/candidatorouter')
+const  usuariorouter = require('./src/router/usuariorouter');
+const candidatorouter = require('./src/router/candidatorouter');
+const empresacontroller = require('./src/router/empresarouter');
+const ofertarouter = require('./src/router/ofertarouter');
 const app = express();
 app.use(express.json());
 app.use('/uploads', express.static('public/uploads'));
@@ -14,6 +16,8 @@ poolpromise()
 app.use('/api/rol', rolrouter);
 app.use('/api/usuario',usuariorouter);
 app.use('/api/candidato',candidatorouter);
+app.use('/api/empresa', empresacontroller);
+app.use('/api/oferta',ofertarouter);
 
 
 const port = process.env.DB_PORT || 3000
