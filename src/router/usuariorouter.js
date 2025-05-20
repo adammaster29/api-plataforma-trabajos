@@ -4,7 +4,7 @@ const verifyToken = require('../middleware/auth');
 const router = express.Router();
 
 
-router.get('/obtener',verifyToken,getusuario);
+router.get('/obtener',getusuario);
 router.get('/login',login);
 router.post('/agregar',postusuario);
 router.put('/editar/:id',verifyToken,putusuario);

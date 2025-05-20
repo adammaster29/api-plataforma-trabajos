@@ -27,14 +27,14 @@ try {
     const user = result.recordset[0];
 
     if (!user) {
-      return  res.status(404).json({message:'usuario no encontrado '})
+      return  res.status(500).json({message:'usuario no encontrado '})
     }
 
 
 
 const isMatch = await bcrypt.compare(contraseña,user.contraseña)
 if (!isMatch) {
-  return  res.status(404).json({message:'contraseña incorrecta '})
+  return  res.status(500).json({message:'contraseña incorrecta '})
 }
 
 
@@ -133,7 +133,7 @@ const getUsuariosPaginados = async (req, res) => {
 
   } catch (error) {
     console.error('Error al obtener usuarios paginados:', error);
-    return res.status(400).json({
+    return res.status(500).json({
       message: 'Error en la paginación',
       error: error.message
     });
@@ -153,7 +153,7 @@ try {
         .input('email', sql.VarChar, email)
     .query('SELECT * FROM usuarios  WHERE email = @email');
 if (result.recordset.length > 0) {
-        return res.status(400).json({message:'este correo esta registrado ya'});
+        return res.status(404).json({message:'este correo esta registrado ya'});
 }
 
     await pool.request()
@@ -166,7 +166,7 @@ if (result.recordset.length > 0) {
    return  res.status(201).json({message:'usuario agregado'})
 } catch (error) {
     console.error('error al crear usuario',error);
-    return res.status(400).json({message:'error al crear un nuevo usuario',error:error.message})
+    return res.status(500).json({message:'error al crear un nuevo usuario',error:error.message})
 }
 
 }
@@ -219,13 +219,13 @@ const deleteusuario = async (req, res) => {
       .query('DELETE FROM usuarios WHERE id_usuario = @id_usuario');
 
     if (result.rowsAffected[0] === 0) {
-      return res.status(404).json({ message: 'Usuario no encontrado' });
+      return res.status(400).json({ message: 'Usuario no encontrado' });
     }
 
-    return res.status(200).json({ message: 'Usuario borrado' });
+    return res.status(204).json({ message: 'Usuario borrado' });
   } catch (error) {
     console.error('Error al eliminar usuario:', error);
-    return res.status(400).json({
+    return res.status(500).json({
       message: 'Error al eliminar usuario',
       error: error.message
     });

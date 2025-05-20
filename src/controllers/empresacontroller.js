@@ -30,7 +30,7 @@ try {
     .input('telefono', sql.VarChar, telefono)
     .query(
         'INSERT INTO empresas(id_usuario,nombre_empresa,nit,sector,direccion,telefono) VALUES(@id_usuario, @nombre_empresa,@nit,@sector,@direccion,@telefono)');
-        return res.status(200).json({message:'empresa agregada exitosamente'})
+        return res.status(201).json({message:'empresa agregada exitosamente'})
     
 } catch (error) {
     console.error('error al agregar empresa',error)
@@ -60,7 +60,7 @@ await pool.request()
 .query(
     '  UPDATE  empresas   SET id_usuario=@id_usuario, nombre_empresa=@nombre_empresa, nit=@nit, sector=@sector, direccion=@direccion, telefono=@telefono WHERE id_empresa=@id_empresa');
 
-return res.status(201).json({message:'empresa actualizada'})
+return res.status(200).json({message:'empresa actualizada'})
     
 } catch (error) {
     console.error('error al actualizar empresas',error);
@@ -78,10 +78,10 @@ try {
     if (result.rowsAffected[0] === 0) {
         return res.status(404).json({message:'empresa no encontrada'});
     }
-    return  res.status(200).json({message:'empresa eliminada'})
+    return  res.status(204).json({message:'empresa eliminada'})
 } catch (error) {
     console.error('error al eliminar',error)
-    return res.status(400).json({message:'error no se pudo eliminar empresa',error:error.message});
+    return res.status(500).json({message:'error no se pudo eliminar empresa',error:error.message});
 }
 }
 

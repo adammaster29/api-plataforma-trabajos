@@ -12,7 +12,7 @@ try {
 
 } catch (error) {
     console.error('error al obtener roles',error);
-    res.status(400).json({message:'error al obtener rol'})
+    res.status(500).json({message:'error al obtener rol'})
 }
 
 }
