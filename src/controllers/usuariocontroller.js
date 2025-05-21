@@ -1,8 +1,10 @@
+require('dotenv').config()
 const { poolpromise, sql } = require("../conf/config")
 const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
+const bcrypt = require('bcrypt');
 
 
-const bcrypt = require('bcrypt')
 // login            --------------------  get
 // obtener user     --------------------  get
 //  paginacion      --------------------  get
@@ -78,6 +80,82 @@ if (!isMatch) {
 }
 
 }
+
+// ------------------------------------------------recuperacion de contraseñas--------------------------------------------
+
+
+const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+  try {
+    const pool = await poolpromise();
+    const result = await pool.request()
+      .input('email', sql.VarChar, email)
+      .query('SELECT * FROM usuarios WHERE email = @email');
+
+    const user = result.recordset[0];
+    if (!user) return res.status(404).json({ message: 'Correo no encontrado' });
+
+    const token = jwt.sign({ id_usuario: user.id_usuario }, process.env.BD_JWT, { expiresIn: '15m' });
+
+    // const resetLink = `${process.env.CLIENT_URL}/reset-password/${token}`;
+const resetLink = `${process.env.CLIENT_URL}/api/usuario/reset-password/${token}`;
+
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    await transporter.sendMail({
+      from: `"Soporte Técnico" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: 'Recuperación de contraseña',
+      html: `
+        <p>Hola ${user.nombre},</p>
+        <p>Haz clic en el siguiente enlace para cambiar tu contraseña:</p>
+        <a href="${resetLink}">${resetLink}</a>
+        <p>Este enlace expirará en 15 minutos.</p>
+      `,
+    });
+
+    res.status(200).json({ message: 'Correo enviado. Revisa tu bandeja de entrada.' });
+  } catch (err) {
+    console.error('Error en forgot-password:', err);
+    res.status(500).json({ message: 'Error al enviar el correo' });
+  }
+};
+
+
+
+
+const resetPassword = async (req, res) => {
+  const { token } = req.params;
+  const { nuevaContraseña } = req.body;
+
+  try {
+    const decoded = jwt.verify(token, process.env.BD_JWT);
+    const pool = await poolpromise();
+
+    const hashedPassword = await bcrypt.hash(nuevaContraseña, 10);
+
+    await pool.request()
+      .input('id_usuario', sql.Int, decoded.id_usuario)
+      .input('nuevaContraseña', sql.VarChar, hashedPassword)
+      .query('UPDATE usuarios SET contraseña = @nuevaContraseña WHERE id_usuario = @id_usuario');
+
+    res.status(200).json({ message: 'Contraseña actualizada correctamente' });
+  } catch (err) {
+    console.error('Error en reset-password:', err);
+    res.status(400).json({ message: 'Token inválido o expirado',error:error.message });
+  }
+};
+
+
+
+
+
 
 const getusuario= async (req,res)=>{
 
@@ -234,4 +312,4 @@ const deleteusuario = async (req, res) => {
 
 
 
-module.exports = {getusuario,login,postusuario,putusuario,deleteusuario,getUsuariosPaginados}
+module.exports = {getusuario,login,postusuario,putusuario,deleteusuario,getUsuariosPaginados,forgotPassword,resetPassword}
