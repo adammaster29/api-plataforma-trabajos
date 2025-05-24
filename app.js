@@ -7,7 +7,8 @@ const  usuariorouter = require('./src/router/usuariorouter');
 const candidatorouter = require('./src/router/candidatorouter');
 const empresarouter = require('./src/router/empresarouter');
 const ofertarouter = require('./src/router/ofertarouter');
-const postulacionrouter = require('./src/router/postulacionrouter')
+const postulacionrouter = require('./src/router/postulacionrouter');
+const  notificacion  = require('./src/router/notificacionrouter');
 const app = express();
 app.use(express.json());
 app.use('/uploads', express.static('public/uploads'));
@@ -20,11 +21,9 @@ app.use('/api/candidato',candidatorouter);
 app.use('/api/empresa', empresarouter);
 app.use('/api/oferta',ofertarouter);
 app.use('/api/postulacion',postulacionrouter);
+app.use('/api/notificacion',notificacion)
 
-// app.get('/salir',async ()=>{
 
-
-// })
 const port = process.env.DB_PORT || 3000
 app.listen(port,()=>{
 console.log(`conectado en el puerto ${port}`);

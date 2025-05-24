@@ -4,6 +4,7 @@ const verifyToken = require('../middleware/auth');
 const router = express.Router();
 
 
+router.get('/usuarios',verifyToken,getUsuariosPaginados);
 router.get('/obtener',verifyToken,getusuario);
 router.get('/login',login);
 router.post('/recuperarpassword',forgotPassword);
@@ -13,6 +14,5 @@ router.post('/reset-password/:token', resetPassword);
 router.post('/agregar',postusuario);
 router.put('/editar/:id',verifyToken,putusuario);
 router.delete('/eliminar/:id',verifyToken,deleteusuario);
-router.get('/usuarios',verifyToken,getUsuariosPaginados);
 
 module.exports= router;
