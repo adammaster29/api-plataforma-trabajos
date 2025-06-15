@@ -13,6 +13,24 @@ try {
 }
 }
 
+const getempresaid = async (req,res)=>{
+const {id} = req.params;
+
+try {
+    
+    const pool = await poolpromise();
+    const result = await pool.request()
+    .input('id_empresa', sql.Int, id)
+    .query(' SELECT * FROM empresas WHERE id_empresa=@id_empresa')
+    res.status(200).json(result.recordset[0]);
+} catch (error) {
+    console.error('Error al traer empresa por id',error)
+    res.status(500).json({message:'error del servidor empresa por id no encontrada',error:error.message});
+}
+
+
+}
+
 const postempresa = async (req,res) =>{
 const {id_usuario,nombre_empresa,nit,sector,direccion,telefono} = req.body;
 if (!id_usuario || !nombre_empresa || !nit || !sector || !direccion || !telefono) {
@@ -88,4 +106,4 @@ try {
 
 
 
-module.exports = {getempresa,postempresa,putempresa,deleteempresa}
+module.exports = {getempresa,postempresa,putempresa,deleteempresa,getempresaid}

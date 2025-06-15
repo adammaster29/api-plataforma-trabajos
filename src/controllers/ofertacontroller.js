@@ -1,5 +1,34 @@
 const {poolpromise, sql} = require('../conf/config');
 
+
+
+const getofertaid = async (req, res) => {
+  let { id } = req.params;
+
+  try {
+    id = parseInt(id); // <--- CONVIERTE A NÚMERO
+
+    if (isNaN(id)) {
+      return res.status(400).json({ message: 'ID inválido' });
+    }
+
+    const pool = await poolpromise();
+    const result = await pool.request()
+      .input('id_oferta', sql.Int, id)
+      .query('SELECT * FROM ofertas WHERE id_oferta = @id_oferta');
+
+    if (result.recordset.length === 0) {
+      return res.status(404).json({ message: 'No se encontró la oferta' });
+    }
+
+    res.status(200).json(result.recordset[0]);
+  } catch (error) {
+    console.error('error al obtener ofertas por id', error);
+    res.status(500).json({ message: 'Error al traer ofertas por id', error });
+  }
+};
+
+
 const getoferta = async (req,res) =>{
 
 try {
@@ -25,7 +54,7 @@ if (!id_empresa || !titulo || !descripcion || !ubicacion || !salario) {
         const pool = await  poolpromise();
         await pool.request()
         .input('id_empresa',sql.Int,id_empresa)
-        .input('titulo',sql.VarChar.titulo)
+        .input('titulo',sql.VarChar,titulo)
         .input('descripcion',sql.VarChar,descripcion) 
         .input('ubicacion',sql.VarChar,ubicacion)
         .input('salario',sql.VarChar,salario)  
@@ -85,4 +114,4 @@ try {
 
 
 
-module.exports ={getoferta,postoferta,putoferta,deleteoferta}
+module.exports ={getoferta,postoferta,putoferta,deleteoferta,getofertaid}

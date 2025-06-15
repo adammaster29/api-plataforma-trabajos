@@ -5,8 +5,8 @@ const router = express.Router();
 
 
 router.get('/usuarios',verifyToken,getUsuariosPaginados);
-router.get('/obtener',verifyToken,getusuario);
-router.get('/login',login);
+router.get('/obtener',getusuario);
+router.post('/login',login);
 router.post('/recuperarpassword',forgotPassword);
 router.post('/resetpassword/:token',resetPassword);
 router.post('/forgot-password', forgotPassword);
